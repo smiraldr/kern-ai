@@ -18,6 +18,9 @@ const OPENROUTER_HEADERS = {
   "X-OpenRouter-Categories": "cli-agent,personal-agent",
 };
 
+/** io.net IO Intelligence — OpenAI-compatible Chat Completions endpoint. */
+const IONET_BASE_URL = "https://api.intelligence.io.solutions/api/v1";
+
 /**
  * Create an OpenAI-compatible client for a given provider.
  * Used by embedding and summary model factories.
@@ -31,6 +34,14 @@ function createOpenAIClient(provider: string) {
       return createOpenAI({
         baseURL: `${base}/v1`,
         apiKey: "ollama",
+      });
+    }
+    case "ionet": {
+      const apiKey = process.env.IONET_API_KEY;
+      if (!apiKey) return null;
+      return createOpenAI({
+        baseURL: IONET_BASE_URL,
+        apiKey,
       });
     }
     default: {
@@ -55,6 +66,7 @@ function createOpenAIClient(provider: string) {
  * - anthropic: openai/text-embedding-3-small (Anthropic has no embeddings API; routed via OpenRouter)
  * - openrouter: openai/text-embedding-3-small
  * - ollama: nomic-embed-text (local, no API key)
+ * - ionet: none (IO Intelligence has no embeddings API; recall/segments stay off)
  */
 export function createEmbeddingModel(config: KernConfig): Parameters<typeof embed>[0]["model"] | null {
   const client = createOpenAIClient(config.provider);
@@ -69,6 +81,10 @@ export function createEmbeddingModel(config: KernConfig): Parameters<typeof embe
       return client.embeddingModel("openai/text-embedding-3-small");
     case "ollama":
       return client.embeddingModel("nomic-embed-text");
+    case "ionet":
+      // IO Intelligence serves no embeddings endpoint — return no model so
+      // recall and segments stay off instead of failing on every call.
+      return null;
     default:
       return client.embeddingModel("openai/text-embedding-3-small");
   }
@@ -98,6 +114,7 @@ export function createEmbeddingModel(config: KernConfig): Parameters<typeof embe
  *   - openrouter: google/gemini-2.5-flash-lite
  *   - ollama: reuses the agent's chat model (avoids forcing users to pull
  *     a separate model just for summaries)
+ *   - ionet: reuses the agent's chat model
  *
  * Useful for separating a thinking chat model from a non-thinking summary
  * model — thinking models burn the output budget on reasoning tokens and
@@ -156,6 +173,8 @@ export function createSummaryModel(config: KernConfig): any {
     case "openrouter":
       return client.chat("google/gemini-2.5-flash-lite");
     case "ollama":
+      return client.chat(config.model);
+    case "ionet":
       return client.chat(config.model);
     default:
       return client.chat("google/gemini-2.5-flash-lite");
@@ -238,6 +257,20 @@ export function createModel(config: KernConfig): any {
         apiKey: "ollama", // required by SDK but ignored by Ollama
       });
       return ollama.chat(config.model);
+    }
+    case "ionet": {
+      const apiKey = process.env.IONET_API_KEY;
+      if (!apiKey) {
+        throw new Error(
+          "provider is \"ionet\" but IONET_API_KEY is not set — add it to .kern/.env or the environment",
+        );
+      }
+      const ionet = createOpenAI({
+        baseURL: IONET_BASE_URL,
+        apiKey,
+      });
+      // io.net serves the Chat Completions API only
+      return ionet.chat(config.model);
     }
     default:
       throw new Error(`Unknown provider: ${config.provider}`);

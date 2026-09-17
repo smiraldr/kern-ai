@@ -18,7 +18,7 @@ The main config file. Committed to git. Unknown fields and wrong types are warne
 |-------|---------|-------------|
 | `name` | directory name | Agent name. Auto-set to directory basename on first startup if missing. Exposed in `/status` response. |
 | `model` | `anthropic/claude-opus-4.8` | Model ID. Format depends on provider. |
-| `provider` | `openrouter` | API provider: `openrouter`, `anthropic`, `openai`, `ollama` |
+| `provider` | `openrouter` | API provider: `openrouter`, `anthropic`, `openai`, `ollama`, `ionet` |
 | `toolScope` | `full` | Tool access level: `full`, `write`, `read` |
 | `maxSteps` | `30` | Max tool-use steps per message |
 | `port` | auto | Fixed port for the agent HTTP server. Assigned automatically from 4100-4999 on creation or first start. |
@@ -54,6 +54,7 @@ The main config file. Committed to git. Unknown fields and wrong types are warne
 - **anthropic** — direct Anthropic API. Model IDs like `claude-opus-4-8`.
 - **openai** — OpenAI or any OpenAI-compatible endpoint. Model IDs like `gpt-5.5`. Set `OPENAI_BASE_URL` in `.env` to route to Azure OpenAI, LiteLLM, or other compatible gateways (default: `https://api.openai.com/v1`). With a custom base URL, requests use the Chat Completions API.
 - **ollama** — local Ollama server. Model IDs match Ollama model names like `gemma4:31b`. Set `OLLAMA_BASE_URL` in `.env` for remote servers (default: `http://localhost:11434`).
+- **ionet** — [IO Intelligence](https://io.net) by io.net. Model IDs are Hugging Face-style org/name like `meta-llama/Llama-3.3-70B-Instruct` (list at `GET https://api.intelligence.io.solutions/api/v1/models`). Set `IONET_API_KEY` in `.env`. Uses the OpenAI-compatible Chat Completions API. IO Intelligence serves no embeddings — recall and segments stay off on `ionet` agents.
 
 ### Summary model
 
@@ -65,6 +66,7 @@ Segment summarization uses a cheap chat model chosen automatically per provider:
 | `anthropic` | `anthropic/claude-haiku-4.5` (via OpenRouter — needs `OPENROUTER_API_KEY`) |
 | `openrouter` | `google/gemini-2.5-flash-lite` |
 | `ollama` | reuses the agent's chat model (no extra model to pull) |
+| `ionet` | reuses the agent's chat model |
 
 ### Embedding model
 
@@ -76,6 +78,7 @@ Recall and segment boundary detection use an embedding model chosen automaticall
 | `anthropic` | `openai/text-embedding-3-small` (via OpenRouter — Anthropic has no embeddings API) |
 | `openrouter` | `openai/text-embedding-3-small` |
 | `ollama` | `nomic-embed-text` |
+| `ionet` | none — IO Intelligence has no embeddings API; recall and segments stay off |
 
 ## Environment variable overrides
 
@@ -96,6 +99,7 @@ Secrets. Gitignored. Never committed. Values here override inherited environment
 
 ```
 OPENROUTER_API_KEY=sk-or-...
+IONET_API_KEY=  # provider: ionet (IO Intelligence by io.net)
 # OPENAI_BASE_URL=https://my-litellm-gateway.example.com/v1  # optional: route openai provider to a compatible endpoint
 OLLAMA_BASE_URL=http://localhost:11434
 SEARXNG_URL=http://searxng:8080

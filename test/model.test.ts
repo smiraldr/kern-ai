@@ -1,6 +1,6 @@
 import { test, beforeEach, afterEach } from "node:test";
 import assert from "node:assert";
-import { summaryViaOpenRouter } from "../src/model.js";
+import { createEmbeddingModel, createModel, summaryViaOpenRouter } from "../src/model.js";
 import { configDefaults, type KernConfig } from "../src/config.js";
 
 function cfg(overrides: Partial<KernConfig>): KernConfig {
@@ -62,4 +62,23 @@ test("summaryViaOpenRouter: openrouter/anthropic providers unaffected", () => {
     summaryViaOpenRouter(cfg({ provider: "anthropic", summaryModel: "anthropic/claude-haiku-4.5" })),
     false,
   );
+});
+
+test("ionet provider: createEmbeddingModel → null (IO Intelligence has no embeddings API)", () => {
+  process.env.IONET_API_KEY = "test-ionet";
+  assert.equal(createEmbeddingModel(cfg({ provider: "ionet" })), null);
+  delete process.env.IONET_API_KEY;
+});
+
+test("ionet provider: createModel without IONET_API_KEY → clear error", () => {
+  delete process.env.IONET_API_KEY;
+  assert.throws(
+    () => createModel(cfg({ provider: "ionet" })),
+    /IONET_API_KEY/,
+  );
+});
+
+test("ionet provider: createEmbeddingModel without IONET_API_KEY → null, no throw", () => {
+  delete process.env.IONET_API_KEY;
+  assert.equal(createEmbeddingModel(cfg({ provider: "ionet" })), null);
 });
