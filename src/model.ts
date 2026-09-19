@@ -19,7 +19,13 @@ const OPENROUTER_HEADERS = {
 };
 
 /** io.net IO Intelligence — OpenAI-compatible Chat Completions endpoint. */
-const IONET_BASE_URL = "https://api.intelligence.io.solutions/api/v1";
+const IONET_DEFAULT_BASE_URL = "https://api.intelligence.io.solutions/api/v1";
+
+/** Normalized IONET_BASE_URL override — trimmed, trailing slashes stripped, defaults to the io.net endpoint. */
+export function ionetBaseURL(): string {
+  const raw = process.env.IONET_BASE_URL?.trim().replace(/\/+$/, "");
+  return raw || IONET_DEFAULT_BASE_URL;
+}
 
 /**
  * Create an OpenAI-compatible client for a given provider.
@@ -40,7 +46,7 @@ function createOpenAIClient(provider: string) {
       const apiKey = process.env.IONET_API_KEY;
       if (!apiKey) return null;
       return createOpenAI({
-        baseURL: IONET_BASE_URL,
+        baseURL: ionetBaseURL(),
         apiKey,
       });
     }
@@ -266,7 +272,7 @@ export function createModel(config: KernConfig): any {
         );
       }
       const ionet = createOpenAI({
-        baseURL: IONET_BASE_URL,
+        baseURL: ionetBaseURL(),
         apiKey,
       });
       // io.net serves the Chat Completions API only

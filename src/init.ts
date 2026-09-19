@@ -5,6 +5,7 @@ import { input, select, password } from "@inquirer/prompts";
 import { registerAgent, findAgent, isProcessRunning, readPid, removePidFile, assignPort } from "./registry.js";
 import { startAgent } from "./daemon.js";
 import type { KernConfig } from "./config.js";
+import { ionetBaseURL } from "./model.js";
 import { log } from "./log.js";
 
 // Fallback models used when live fetch fails (e.g. no network, bad key)
@@ -71,7 +72,7 @@ async function fetchModels(
         url = `${apiKey || "http://localhost:11434"}/api/tags`;
         break;
       case "ionet":
-        url = "https://api.intelligence.io.solutions/api/v1/models";
+        url = `${ionetBaseURL()}/models`;
         if (apiKey) headers["Authorization"] = `Bearer ${apiKey}`;
         break;
       default:

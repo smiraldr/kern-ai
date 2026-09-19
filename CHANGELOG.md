@@ -3,7 +3,7 @@
 ## next
 
 ### Features
-- **IO Intelligence (io.net) provider** — set `provider` to `ionet` and `IONET_API_KEY` in `.kern/.env` to route chat to io.net's IO Intelligence endpoint (`https://api.intelligence.io.solutions/api/v1`, OpenAI-compatible Chat Completions API). Model IDs are Hugging Face-style org/name (e.g. `meta-llama/Llama-3.3-70B-Instruct`, list at `GET /models`). IO Intelligence serves no embeddings — recall and segments stay off on `ionet` agents instead of failing per call.
+- **IO Intelligence (io.net) provider** — set `provider` to `ionet` and `IONET_API_KEY` in `.kern/.env` to route chat to io.net's IO Intelligence endpoint (`https://api.intelligence.io.solutions/api/v1`, OpenAI-compatible Chat Completions API). Model IDs are Hugging Face-style org/name (e.g. `meta-llama/Llama-3.3-70B-Instruct`, list at `GET /models`). IO Intelligence serves no embeddings — recall and segments stay off on `ionet` agents instead of failing per call. Set `IONET_BASE_URL` to route through a compatible gateway (default: `https://api.intelligence.io.solutions/api/v1`).
 
 ## 0.38.0 (2026-09-16)
 

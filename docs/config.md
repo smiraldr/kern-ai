@@ -54,7 +54,7 @@ The main config file. Committed to git. Unknown fields and wrong types are warne
 - **anthropic** — direct Anthropic API. Model IDs like `claude-opus-4-8`.
 - **openai** — OpenAI or any OpenAI-compatible endpoint. Model IDs like `gpt-5.5`. Set `OPENAI_BASE_URL` in `.env` to route to Azure OpenAI, LiteLLM, or other compatible gateways (default: `https://api.openai.com/v1`). With a custom base URL, requests use the Chat Completions API.
 - **ollama** — local Ollama server. Model IDs match Ollama model names like `gemma4:31b`. Set `OLLAMA_BASE_URL` in `.env` for remote servers (default: `http://localhost:11434`).
-- **ionet** — [IO Intelligence](https://io.net) by io.net. Model IDs are Hugging Face-style org/name like `meta-llama/Llama-3.3-70B-Instruct` (list at `GET https://api.intelligence.io.solutions/api/v1/models`). Set `IONET_API_KEY` in `.env`. Uses the OpenAI-compatible Chat Completions API. IO Intelligence serves no embeddings — recall and segments stay off on `ionet` agents.
+- **ionet** — [IO Intelligence](https://io.net) by io.net. Model IDs are Hugging Face-style org/name like `meta-llama/Llama-3.3-70B-Instruct` (list at `GET https://api.intelligence.io.solutions/api/v1/models`). Set `IONET_API_KEY` in `.env`. Set `IONET_BASE_URL` to route through a compatible gateway (default: `https://api.intelligence.io.solutions/api/v1`). Uses the OpenAI-compatible Chat Completions API. IO Intelligence serves no embeddings — recall and segments stay off on `ionet` agents.
 
 ### Summary model
 
@@ -100,6 +100,7 @@ Secrets. Gitignored. Never committed. Values here override inherited environment
 ```
 OPENROUTER_API_KEY=sk-or-...
 # IONET_API_KEY=...  # provider: ionet (IO Intelligence by io.net)
+# IONET_BASE_URL=https://my-gateway.example.com/v1  # optional: route ionet provider to a compatible endpoint
 # OPENAI_BASE_URL=https://my-litellm-gateway.example.com/v1  # optional: route openai provider to a compatible endpoint
 OLLAMA_BASE_URL=http://localhost:11434
 SEARXNG_URL=http://searxng:8080
