@@ -169,7 +169,7 @@ export class SegmentIndex {
 
     const embModel = createEmbeddingModel(config);
     if (!embModel) {
-      throw new Error("No embedding model available (need OPENROUTER_API_KEY, OPENAI_API_KEY, or Ollama provider)");
+      throw new Error("No embedding model available (need OPENROUTER_API_KEY, OPENAI_API_KEY, or Ollama provider; the ionet provider has no embeddings API)");
     }
     this.embeddingModel = embModel;
 

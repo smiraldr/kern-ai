@@ -39,7 +39,7 @@ export class RecallIndex {
 
     const model = createEmbeddingModel(config);
     if (!model) {
-      throw new Error("No embedding model available (need OPENROUTER_API_KEY, OPENAI_API_KEY, or Ollama provider)");
+      throw new Error("No embedding model available (need OPENROUTER_API_KEY, OPENAI_API_KEY, or Ollama provider; the ionet provider has no embeddings API)");
     }
     this.embeddingModel = model;
   }
