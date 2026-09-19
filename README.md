@@ -175,6 +175,7 @@ First Telegram/Slack/Matrix/Nostr user is auto-paired as operator. Others pair w
 | **anthropic** | Direct Anthropic API |
 | **openai** | OpenAI / Azure |
 | **ollama** | Local models via [Ollama](https://ollama.com) |
+| **ionet** | [IO Intelligence](https://io.net) by io.net |
 
 Set `model` for chat and optionally `mediaModel` for image vision. Embedding and summary models are chosen automatically per provider — see [docs/config.md](docs/config.md#providers).
 

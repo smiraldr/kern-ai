@@ -33,6 +33,13 @@ const FALLBACK_MODELS: Record<string, { name: string; value: string }[]> = {
     { name: "GPT-OSS 20B", value: "gpt-oss:20b" },
     { name: "Mistral Small 3.2 24B", value: "mistral-small3.2:24b" },
   ],
+  ionet: [
+    { name: "Llama 3.3 70B", value: "meta-llama/Llama-3.3-70B-Instruct" },
+    { name: "DeepSeek R1 0528", value: "deepseek-ai/DeepSeek-R1-0528" },
+    { name: "GLM 4.7 Flash", value: "zai-org/GLM-4.7-Flash" },
+    { name: "Kimi K2.5", value: "moonshotai/Kimi-K2.5" },
+    { name: "GPT-OSS 120B", value: "openai/gpt-oss-120b" },
+  ],
 };
 
 // Models to exclude from OpenRouter (embeddings, moderation, old versions, etc.)
@@ -62,6 +69,10 @@ async function fetchModels(
         break;
       case "ollama":
         url = `${apiKey || "http://localhost:11434"}/api/tags`;
+        break;
+      case "ionet":
+        url = "https://api.intelligence.io.solutions/api/v1/models";
+        if (apiKey) headers["Authorization"] = `Bearer ${apiKey}`;
         break;
       default:
         return null;
@@ -112,6 +123,13 @@ async function fetchModels(
         .map((m) => ({ name: m.name, value: m.name }));
     }
 
+    if (provider === "ionet") {
+      // IO Intelligence returns { data: [{ id: "org/name", ... }] }
+      return models
+        .map((m) => ({ name: m.id, value: m.id }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+    }
+
     return null;
   } catch {
     return null;
@@ -137,6 +155,7 @@ const PROVIDERS = [
   { name: "Anthropic", value: "anthropic", keyLabel: "Anthropic API key" },
   { name: "OpenAI", value: "openai", keyLabel: "OpenAI API key" },
   { name: "Ollama (local)", value: "ollama", keyLabel: "Ollama server URL" },
+  { name: "IO Intelligence (io.net)", value: "ionet", keyLabel: "IO Intelligence API key" },
 ];
 
 export const API_KEY_ENV: Record<string, string> = {
@@ -144,6 +163,7 @@ export const API_KEY_ENV: Record<string, string> = {
   anthropic: "ANTHROPIC_API_KEY",
   openai: "OPENAI_API_KEY",
   ollama: "OLLAMA_BASE_URL",
+  ionet: "IONET_API_KEY",
 };
 
 function print(text: string) {
