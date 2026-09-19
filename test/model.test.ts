@@ -8,14 +8,18 @@ function cfg(overrides: Partial<KernConfig>): KernConfig {
 }
 
 let savedKey: string | undefined;
+let savedIonetKey: string | undefined;
 
 beforeEach(() => {
   savedKey = process.env.OPENROUTER_API_KEY;
+  savedIonetKey = process.env.IONET_API_KEY;
 });
 
 afterEach(() => {
   if (savedKey === undefined) delete process.env.OPENROUTER_API_KEY;
   else process.env.OPENROUTER_API_KEY = savedKey;
+  if (savedIonetKey === undefined) delete process.env.IONET_API_KEY;
+  else process.env.IONET_API_KEY = savedIonetKey;
 });
 
 test("summaryViaOpenRouter: ollama + namespaced ID + key → true", () => {
@@ -67,7 +71,6 @@ test("summaryViaOpenRouter: openrouter/anthropic providers unaffected", () => {
 test("ionet provider: createEmbeddingModel → null (IO Intelligence has no embeddings API)", () => {
   process.env.IONET_API_KEY = "test-ionet";
   assert.equal(createEmbeddingModel(cfg({ provider: "ionet" })), null);
-  delete process.env.IONET_API_KEY;
 });
 
 test("ionet provider: createModel without IONET_API_KEY → clear error", () => {
